@@ -8,13 +8,15 @@ use App\Models\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        // Check if user is already authenticated
-        if (Auth::guard('api')->check()) {
+        // Check if request has a valid Bearer token
+        $token = $request->bearerToken();
+        if ($token && PersonalAccessToken::findToken($token)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Already authenticated. Please log out first.',
@@ -27,8 +29,8 @@ class AuthController extends Controller
 
         // Verify credentials
         if ($admin && Hash::check($request->password, $admin->password)) {
-            // Generate token
-            $token = $admin->createToken('auth_token')->plainTextToken;
+            $expiration = now()->addMinutes(60);
+            $token = $admin->createToken('auth_token', ['*'], $expiration)->plainTextToken;
 
             return response()->json([
                 'status' => 'success',
