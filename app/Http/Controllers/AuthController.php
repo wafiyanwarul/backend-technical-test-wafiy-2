@@ -29,7 +29,8 @@ class AuthController extends Controller
 
         // Verify credentials
         if ($admin && Hash::check($request->password, $admin->password)) {
-            $expiration = now()->addMinutes(60);
+            $expirationMinutes = config('sanctum.expiration', 3600) / 60;
+            $expiration = now()->addMinutes($expirationMinutes);
             $token = $admin->createToken('auth_token', ['*'], $expiration)->plainTextToken;
 
             return response()->json([
