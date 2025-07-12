@@ -21,7 +21,7 @@ class AdminSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@aksamedia.com',
             'phone' => '081234567890',
-            'password' => Hash::make('siadmin123'),
+            'password' => Hash::make('pastibisa'),
         ]);
     }
 }
