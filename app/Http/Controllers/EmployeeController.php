@@ -146,4 +146,38 @@ class EmployeeController extends Controller
             ], 500);
         }
     }
+
+    public function destroy(string $uuid): JsonResponse
+    {
+        try {
+            $employee = Employee::where('id', $uuid)->firstOrFail();
+
+            // Delete image if exists
+            if ($employee->image) {
+                Storage::disk('public')->delete($employee->image);
+            }
+
+            $employee->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Employee deleted successfully',
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete employee: Employee not found.',
+            ], 404);
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete employee: Database error occurred.',
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete employee: An unexpected error occurred.',
+            ], 500);
+        }
+    }
 }

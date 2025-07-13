@@ -49,4 +49,34 @@ class AuthController extends Controller
             'data' => null,
         ], 401);
     }
+
+    public function logout(): JsonResponse
+    {
+        try {
+            $token = request()->bearerToken();
+            if ($token) {
+                $accessToken = PersonalAccessToken::findToken($token);
+                if ($accessToken) {
+                    $accessToken->delete(); // Hapus token spesifik dari database
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Logout successful',
+                    ], 200);
+                }
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No valid token found for logout.',
+                ], 400);
+            }
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No token provided for logout.',
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to logout: An unexpected error occurred. ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
