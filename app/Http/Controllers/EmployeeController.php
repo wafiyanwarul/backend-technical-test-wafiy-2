@@ -95,28 +95,27 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, string $uuid): JsonResponse
     {
+        $response = ['status' => 'error', 'message' => ''];
+        $statusCode = 500;
+
         try {
             $employee = Employee::where('id', $uuid)->firstOrFail();
 
             $data = $request->validated();
 
-            // Handle image update or removal
             $imagePath = $employee->image;
             if ($request->hasFile('image')) {
-                // Delete old image if exists
                 if ($employee->image) {
                     Storage::disk('public')->delete($employee->image);
                 }
                 $imagePath = $request->file('image')->store('employees', 'public');
-            } elseif ($request->has('image') && is_null($request->image)) {
-                // Explicitly remove image if image field is set to null
+            } elseif ($request->has('image') && $request->input('image') === 'null') {
                 if ($employee->image) {
                     Storage::disk('public')->delete($employee->image);
                 }
                 $imagePath = null;
             }
 
-            // Update employee
             $employee->update([
                 'image' => $imagePath,
                 'name' => $data['name'],
@@ -125,59 +124,45 @@ class EmployeeController extends Controller
                 'position' => $data['position'],
             ]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Employee updated successfully',
-            ], 200);
-        } catch (QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to update employee: Database error occurred.',
-            ], 500);
+            $response = ['status' => 'success', 'message' => 'Employee updated successfully'];
+            $statusCode = 200;
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to update employee: Employee not found.',
-            ], 404);
+            $response['message'] = 'Failed to update employee: Employee not found.';
+            $statusCode = 404;
+        } catch (QueryException $e) {
+            $response['message'] = 'Failed to update employee: Database error occurred.';
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to update employee: An unexpected error occurred.',
-            ], 500);
+            $response['message'] = 'Failed to update employee: An unexpected error occurred.';
         }
+
+        return response()->json($response, $statusCode);
     }
 
     public function destroy(string $uuid): JsonResponse
     {
+        $response = ['status' => 'error', 'message' => ''];
+        $statusCode = 500;
+
         try {
             $employee = Employee::where('id', $uuid)->firstOrFail();
 
-            // Delete image if exists
             if ($employee->image) {
                 Storage::disk('public')->delete($employee->image);
             }
 
             $employee->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Employee deleted successfully',
-            ], 200);
+            $response = ['status' => 'success', 'message' => 'Employee deleted successfully'];
+            $statusCode = 200;
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to delete employee: Employee not found.',
-            ], 404);
+            $response['message'] = 'Failed to delete employee: Employee not found.';
+            $statusCode = 404;
         } catch (QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to delete employee: Database error occurred.',
-            ], 500);
+            $response['message'] = 'Failed to delete employee: Database error occurred.';
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to delete employee: An unexpected error occurred.',
-            ], 500);
+            $response['message'] = 'Failed to delete employee: An unexpected error occurred.';
         }
+
+        return response()->json($response, $statusCode);
     }
 }
