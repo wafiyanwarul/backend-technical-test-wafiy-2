@@ -146,12 +146,20 @@ The API will be available at `http://localhost:8000`.
       }
   }
   ```
-- **Error Response** (401/403):
+- **Error Response** (401):
   ```json
   {
       "status": "error",
-      "message": "Invalid username or password" / "Already authenticated. Please log out first.",
+      "message": "Invalid username or password",
       "data": null
+  }
+  ```
+- **Error Response** (403):
+  ```json
+  {
+    "status": "error",
+    "message": "Already authenticated. Please log out first.",
+    "data": null
   }
   ```
 
@@ -166,11 +174,18 @@ The API will be available at `http://localhost:8000`.
       "message": "Logout successful"
   }
   ```
-- **Error Response** (400/500):
+- **Error Response** (400):
   ```json
   {
       "status": "error",
-      "message": "No token provided for logout." / "No valid token found for logout." / "Failed to logout: An unexpected error occurred."
+      "message": "No token provided for logout."
+  }
+  ```
+- **Error Response** (500):
+  ```json
+  {
+      "status": "error",
+      "message": "No valid token found for logout." "/" "Failed to logout: An unexpected error occurred."
   }
   ```
 
@@ -181,7 +196,7 @@ The API will be available at `http://localhost:8000`.
 - **Request Headers**:
   - `Authorization: Bearer <token>`
 - **Success Response** (200):
-  ```json
+  ```bash
   {
       "status": "success",
       "message": "Divisions retrieved successfully",
@@ -194,12 +209,12 @@ The API will be available at `http://localhost:8000`.
           ]
       },
       "pagination": {
-          "current_page": int,
-          "per_page": int,
-          "total": int,
-          "last_page": int,
-          "from": int,
-          "to": int
+          "current_page": 1,
+          "per_page": 10,
+          "total": 2,
+          "last_page": 1,
+          "from": 1,
+          "to": 2
       }
   }
   ```
@@ -226,7 +241,7 @@ The API will be available at `http://localhost:8000`.
           "employees": [
               {
                   "id": "uuid",
-                  "image": "url" / null,
+                  "image": "image_path", // or can be null,
                   "name": "string",
                   "phone": "string",
                   "division": {
@@ -238,12 +253,12 @@ The API will be available at `http://localhost:8000`.
           ]
       },
       "pagination": {
-          "current_page": int,
-          "per_page": int,
-          "total": int,
-          "last_page": int,
-          "from": int,
-          "to": int
+          "current_page": 1,
+          "per_page": 10,
+          "total": 2,
+          "last_page": 1,
+          "from": 1,
+          "to": 2
       }
   }
   ```
@@ -296,11 +311,18 @@ The API will be available at `http://localhost:8000`.
       "message": "Employee updated successfully"
   }
   ```
-- **Error Response** (404/500):
+- **Error Response** (404):
   ```json
   {
       "status": "error",
-      "message": "Failed to update employee: Employee not found." / "Failed to update employee: Database error occurred."
+      "message": "Failed to update employee: Employee not found."
+  }
+  ```
+- **Error Response** (500):
+  ```json
+  {
+      "status": "error",
+      "message": "Failed to update employee: Database error occurred."
   }
   ```
 
@@ -315,11 +337,18 @@ The API will be available at `http://localhost:8000`.
       "message": "Employee deleted successfully"
   }
   ```
-- **Error Response** (404/500):
+- **Error Response** (404):
   ```json
   {
       "status": "error",
-      "message": "Failed to delete employee: Employee not found." / "Failed to delete employee: Database error occurred."
+      "message": "Failed to delete employee: Employee not found."
+  }
+  ```
+- **Error Response** (500):
+  ```json
+  {
+      "status": "error",
+      "message": "Failed to delete employee: Database error occurred."
   }
   ```
 
@@ -340,4 +369,4 @@ This project is licensed under the [MIT License](LICENSE).
 ## Acknowledgments
 - Built with [Laravel](https://laravel.com/), a powerful PHP framework.
 - Authentication powered by [Laravel Sanctum](https://laravel.com/docs/sanctum).
-- Thanks to the xAI team and reviewer for this technical test opportunity!
+- Thanks to company and reviewer for this technical test opportunity!
