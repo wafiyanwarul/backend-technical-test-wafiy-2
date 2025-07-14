@@ -29,6 +29,7 @@
 This repository contains a Laravel 12-based API developed as part of a technical test, utilizing Laravel Sanctum for authentication. The API implements CRUD operations for divisions and employees, along with authentication and logout functionality. This README provides detailed instructions for setup, usage, and API documentation to assist reviewers in evaluating the project.
 
 ## Table of Contents
+- [Collection Documentation](#collection-documentation)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -38,6 +39,12 @@ This repository contains a Laravel 12-based API developed as part of a technical
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
+
+## Collection Documentation
+- To see this Collection Documentation at Postman, access the link below and open in the new tab of your browser! 
+```bash
+https://documenter.getpostman.com/view/28318164/2sB34hEf5F
+```
 
 ## Features
 - Authentication using Laravel Sanctum with token-based access.
