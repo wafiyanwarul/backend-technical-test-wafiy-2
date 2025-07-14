@@ -5,7 +5,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a></p>
 
-# Laravel Simple API Project - Technical Test
+# Laravel Simple Employees API Project - Technical Test
 
 
 <p align="center">
@@ -59,8 +59,8 @@ This repository contains a Laravel 12-based API developed as part of a technical
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/wafiyanwarul/backend-technical-test-wafiy-2.git
-cd backend-technical-test-wafiy-2
+git clone https://github.com/wafiyanwarul/simple-employees-api-wafiy.git
+cd simple-employees-api-wafiy
 ```
 
 ### 2. Install Dependencies
