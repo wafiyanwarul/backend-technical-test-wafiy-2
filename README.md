@@ -241,7 +241,7 @@ The API will be available at `http://localhost:8000`.
           "employees": [
               {
                   "id": "uuid",
-                  "image": "image_path", // or can be null,
+                  "image": "image_path" "/" "can be null",
                   "name": "string",
                   "phone": "string",
                   "division": {
