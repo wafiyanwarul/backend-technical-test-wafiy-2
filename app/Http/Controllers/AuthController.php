@@ -14,69 +14,71 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        // Check if request has a valid Bearer token
-        $token = $request->bearerToken();
-        if ($token && PersonalAccessToken::findToken($token)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Already authenticated. Please log out first.',
-                'data' => null,
-            ], 403);
+        $response = ['status' => 'error', 'message' => '', 'data' => null];
+        $statusCode = 401;
+
+        try {
+            // Check if request has a valid Bearer token
+            $token = $request->bearerToken();
+            if ($token && PersonalAccessToken::findToken($token)) {
+                $response['message'] = 'Already authenticated. Please log out first.';
+                $statusCode = 403;
+                return response()->json($response, $statusCode);
+            }
+
+            // Find admin by username
+            $admin = Admin::where('username', $request->username)->first();
+
+            // Verify credentials
+            if ($admin && Hash::check($request->password, $admin->password)) {
+                $expirationMinutes = config('sanctum.expiration', 3600) / 60;
+                $expiration = now()->addMinutes($expirationMinutes);
+                $token = $admin->createToken('auth_token', ['*'], $expiration)->plainTextToken;
+
+                $response = [
+                    'status' => 'success',
+                    'message' => 'Login successful',
+                    'data' => [
+                        'token' => $token,
+                        'admin' => new AdminResource($admin),
+                    ],
+                ];
+                $statusCode = 200;
+            } else {
+                $response['message'] = 'Invalid username or password';
+            }
+        } catch (\Exception $e) {
+            $response['message'] = 'Failed to login: An unexpected error occurred. ' . $e->getMessage();
+            $statusCode = 500;
         }
 
-        // Find admin by username
-        $admin = Admin::where('username', $request->username)->first();
-
-        // Verify credentials
-        if ($admin && Hash::check($request->password, $admin->password)) {
-            $expirationMinutes = config('sanctum.expiration', 3600) / 60;
-            $expiration = now()->addMinutes($expirationMinutes);
-            $token = $admin->createToken('auth_token', ['*'], $expiration)->plainTextToken;
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Login successful',
-                'data' => [
-                    'token' => $token,
-                    'admin' => new AdminResource($admin),
-                ],
-            ], 200);
-        }
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Invalid username or password',
-            'data' => null,
-        ], 401);
+        return response()->json($response, $statusCode);
     }
 
     public function logout(): JsonResponse
     {
+        $response = ['status' => 'error', 'message' => ''];
+        $statusCode = 400;
+
         try {
             $token = request()->bearerToken();
             if ($token) {
                 $accessToken = PersonalAccessToken::findToken($token);
                 if ($accessToken) {
-                    $accessToken->delete(); // Hapus token spesifik dari database
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Logout successful',
-                    ], 200);
+                    $accessToken->delete();
+                    $response = ['status' => 'success', 'message' => 'Logout successful'];
+                    $statusCode = 200;
+                } else {
+                    $response['message'] = 'No valid token found for logout.';
                 }
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No valid token found for logout.',
-                ], 400);
+            } else {
+                $response['message'] = 'No token provided for logout.';
             }
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No token provided for logout.',
-            ], 400);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to logout: An unexpected error occurred. ' . $e->getMessage(),
-            ], 500);
+            $response['message'] = 'Failed to logout: An unexpected error occurred. ' . $e->getMessage();
+            $statusCode = 500;
         }
+
+        return response()->json($response, $statusCode);
     }
 }
