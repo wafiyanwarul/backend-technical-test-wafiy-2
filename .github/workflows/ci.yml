@@ -25,7 +25,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1' # Ubah ke 8.1, cek composer.json jika perlu
+        php-version: '8.3' # Ubah ke 8.3, cek composer.json jika perlu
     - name: Check .env.example
       run: test -f .env.example || (echo ".env.example not found" && exit 1)
     - name: Copy .env
